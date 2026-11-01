@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function activeUser() {
+      return signedIn() && profile().active == true;
+    }
+
+    function isAdmin() {
+      return activeUser() && profile().role == 'admin';
+    }
+
+    function assignedTo(stationId) {
+      return activeUser()
+        && profile().role == 'collaborator'
+        && stationId in profile().stationIds;
+    }
+
+    match /publicTeams/{teamId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /teams/{teamId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /stations/{stationId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /results/{resultId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /publicCaribeEvaluations/{evaluationId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /caribeEvaluations/{evaluationId} {
+      allow read: if isAdmin() || assignedTo('caribe');
+      allow write: if false;
+    }
+
+    match /scoringRules/{ruleId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /eventConfig/{configId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if false;
+    }
+
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+  }
+}
