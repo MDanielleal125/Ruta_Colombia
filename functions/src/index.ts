@@ -11,7 +11,7 @@ import type { ScoringRules } from '../../src/domain/types.js'
 
 if (getApps().length === 0) initializeApp()
 const db = getFirestore()
-const REGION = 'us-central1'
+const REGION = 'southamerica-east1'
 const COMPETITIVE_STATIONS = ['pacifico', 'amazonia', 'llanos', 'eje-cafetero', 'santander', 'insular', 'andina']
 const CARIBE_CRITERIA = [
   'Ritmo y seguimiento musical',
