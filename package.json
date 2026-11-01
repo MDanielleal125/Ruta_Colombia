@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:emulator": "vite --mode emulator",
+    "emulators": "npm --prefix functions run build && firebase emulators:start --only auth,firestore,functions --project demo-ruta-colombia",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
